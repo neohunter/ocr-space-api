@@ -6,25 +6,17 @@ require 'ocr_space'
 class OcrSpace::Connector
   URL = 'https://api.ocr.space/parse/image'
 
-  def make_request(url, language: 'eng', overlay_required: false)
-    uri = URI(URL)
-    request = Net::HTTP.post_form(uri, {
+  def make_request(url_or_file, language: 'eng', overlay_required: false)
+    params = {
       apikey: OcrSpace.config.apikey, 
-      url: url,
       language: language, 
       isOverlayRequired: overlay_required
-    })
+    }
 
-    OcrSpace::Response.new(request.body)
-  end
-  def make_request_file(path, language: 'eng', overlay_required: false)
-    uri = URI(URL)
-    request = RestClient.post(uri, {
-      path: File.new(path),
-      apikey: OcrSpace.config.apikey, 
-      language: language, 
-      isOverlayRequired: overlay_required
-    })
+    extra_key = url_or_file.is_a?(File) ? :file : :url
+    params[extra_key] = url_or_file
+
+    request = RestClient.post(URL, params)
 
     OcrSpace::Response.new(request.body)
   end

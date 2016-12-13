@@ -6,12 +6,11 @@ require 'ocr_space'
 OcrSpace.config.apikey = '18f493558d88957'
 
 
-response = OcrSpace.from_url 'http://i53.photobucket.com/albums/g62/pure-perfection/paris-hilton-letter.jpg'
- puts response.text
-
-response = OcrSpace.from_file ''
+response = OcrSpace.from_file '/Users/macbook/Downloads/CO6973863835.pdf'
+binding.pry
 # response.text
 # response.api_result
+puts response.text
 
 
 

@@ -5,12 +5,17 @@ require 'json'
 
 class OcrSpace::Response
 
-  attr_reader :json_result
+  attr_reader :json_result, :results
   def initialize(json)
     @json_result = JSON.parse json
+    @results = []
 
-    if ocr_exist_code == 4
+    if @json_result['OCRExitCode'] == 4
       raise NotAbleToParseImage
+    end
+
+    @json_result['ParsedResults'].each do |pr|
+      @results << ParsedResult.new(pr)
     end
   end
 
@@ -18,10 +23,15 @@ class OcrSpace::Response
     @json_result['ParsedResults'].first['ParsedText']
   end
 
-  def results
-    @json_result['ParsedResults']
-  end
-
 
   class NotAbleToParseImage < StandardError; end
+
+  class ParsedResult
+    attr_reader :text, :source
+
+    def initialize(source_hash)
+      @source = source_hash
+      @text = @source['ParsedText']
+    end
+  end
 end
